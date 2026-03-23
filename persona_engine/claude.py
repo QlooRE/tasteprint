@@ -86,72 +86,60 @@ def generate_personas(
         if n_cities > 1 else ""
     )
 
-    prompt = f"""You are a senior cultural strategist at a leading creative agency. \
+    prompt = f"""You are a senior analyst at an audience intelligence firm. \
 You have Qloo taste-affinity data showing what {age_str} {gender_str}s who \
 have affinity for **{seed_name}** gravitate toward across {n_cities} {"city" if n_cities == 1 else "cities"}.{compare_clause}
 
 Taste data — top affinity results by city and category:
 {data_summary}
 
-Write a rich, consulting-grade persona profile for each city. Each profile must include:
+Produce a data-grounded audience profile for each city. Every claim must be \
+traceable to the taste signals above — do not invent behaviors or interests \
+not supported by the data. Write in a confident, analytical register: clear and \
+specific, like a Nielsen or Ipsos deliverable. Avoid marketing copy, aspirational \
+language, or generic descriptors.
 
-- **archetype**: A vivid 3–5 word name with "The" prefix capturing who this person is \
-(e.g. "The West Loop Tastemaker", "The Sunday Brunch Optimizer"). \
-Make it feel earned by the data, not generic.
+Each profile must include:
 
-- **core_promises**: Array of exactly 5 short, punchy, quotable lines written in the \
-second person ("you") or as brand promises — capturing the emotional pull of this \
-lifestyle for this audience. Each line should be poetic, specific, and 8–15 words. \
-(e.g. "Your slip is your social circle, dock life meets design.", \
-"Luxury without pretension, adventure without effort.")
+- **archetype**: A precise 3–5 word name with "The" prefix that captures who this \
+person is as revealed by the data (e.g. "The West Loop Tastemaker"). \
+Earn it from the signals — avoid clichés.
 
-- **psychographics**: 1–2 sentences describing this person's mindset, values, and \
-social identity — what they believe about themselves and how they move through the world. \
-Be specific and cultural, not demographic.
+- **summary**: 3–4 sentences synthesizing the full picture: who this audience is, \
+what their collective taste profile reveals about their motivations and lifestyle, \
+and — if multiple cities — what distinguishes this market's version. \
+Lead with the insight, not the demographics.
 
-- **core_motivation**: One sharp sentence capturing the single deepest driver for this \
-persona — what they are ultimately seeking. \
-(e.g. "Belonging to a community that's elevated, social, and convenient.")
+- **taste_insights**: Array of exactly 4 insight statements, each connecting one or \
+more specific entities from the taste data to a behavioral or motivational pattern. \
+Format: observation about the data → what it reveals. Be precise and non-obvious. \
+(e.g. "Co-indexing on Equinox and Aesop alongside Bon Appétit suggests this audience \
+treats premiumization as identity expression rather than status display — quality is \
+personal, not performative.")
 
-- **lifestyle_traits**: A comma-separated string of 6–8 vivid descriptors capturing \
-how this person lives day-to-day. \
-(e.g. "Design-conscious, fitness-minded, experience-driven, socially curated, sustainability-oriented")
+- **day_in_the_life**: A 4–5 sentence narrative in second person ("you"), grounded \
+in this specific city, drawing on actual entities from the taste data. \
+Write as an observed portrait, not a fantasy. Restrained, specific, credible. \
+No hyperbole — the texture of a real day, not a highlight reel.
 
-- **key_interests**: Array of 7–9 specific behaviors and interests inferred directly \
-from the taste data — concrete activities, media, brands, and habits. \
-(e.g. "Weekend farmers markets and boutique fitness", "Craft cocktail culture and local dining")
+- **audience_signals**: Array of exactly 4 bullets summarizing the key brand, media, \
+and cultural affinities for this audience and what each cluster signals about their \
+consumption patterns, values, or behaviors. Ground each bullet in the data. \
+(e.g. "Music: strong indexing toward [artist] and [artist] indicates preference for \
+[characteristic] — suggests receptivity to [implication].")
 
-- **what_they_seek**: Array of 5–6 bullet points on what specifically attracts and \
-retains this persona in this city — what experiences, amenities, or qualities of place \
-resonate most with them here. Ground these in the actual taste signals.
-
-- **day_in_the_life**: An immersive 4–6 sentence narrative written entirely in second \
-person ("you") — specific to this city, drawing on the actual taste data entities. \
-Paint a vivid sensory scene of a day in this person's life here. \
-End with a line that captures emotional resonance, not just activity. \
-(Model: "Morning coffee on the deck as the marina hums awake. A casual chat with \
-neighbors before setting out... Here, you're not just near the lake — you belong to it.")
-
-- **creative_direction**: Array of exactly 4 actionable cues for a creative team: \
-tone of voice, visual/aesthetic language, cultural touchpoints to reference, \
-and one "avoid" (what would ring false for this persona).
-
-- **city_distinction**: One sharp sentence on what makes this city's version of this \
-persona meaningfully different from the others. If there's only one city, describe \
-what makes this persona culturally specific to that market.
+- **city_distinction**: One sharp analytical sentence on what makes this city's version \
+of this audience meaningfully different from the others. If only one city, describe \
+what the data reveals as culturally specific to this market.
 
 Return ONLY valid JSON — no markdown fences, no commentary — in this exact shape:
 {{
   "CityName": {{
     "archetype": "...",
-    "core_promises": ["...", "...", "...", "...", "..."],
-    "psychographics": "...",
-    "core_motivation": "...",
-    "lifestyle_traits": "...",
-    "key_interests": ["...", "...", "...", "...", "...", "...", "..."],
-    "what_they_seek": ["...", "...", "...", "...", "..."],
+    "summary": "...",
+    "taste_insights": ["...", "...", "...", "..."],
     "day_in_the_life": "...",
-    "creative_direction": ["...", "...", "...", "..."],
+    "audience_signals": ["...", "...", "...", "..."],
     "city_distinction": "..."
   }}
 }}"""
@@ -159,7 +147,7 @@ Return ONLY valid JSON — no markdown fences, no commentary — in this exact s
     client = _get_client()
     msg = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=5000,
+        max_tokens=4000,
         messages=[{"role": "user", "content": prompt}],
     )
 

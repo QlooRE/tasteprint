@@ -242,47 +242,34 @@ input[type="text"] { width: 200px; }
 /* ── Persona cards ── */
 .persona-card {
   background: var(--surface);
-  border: 1px solid rgba(167,139,250,.35);
+  border: 1px solid rgba(167,139,250,.25);
   border-radius: var(--r); overflow: hidden;
 }
 .persona-hdr {
   padding: 12px 18px;
-  background: linear-gradient(135deg, rgba(167,139,250,.14) 0%, rgba(88,166,255,.06) 100%);
-  border-bottom: 1px solid rgba(167,139,250,.2);
+  background: linear-gradient(135deg, rgba(167,139,250,.1) 0%, rgba(88,166,255,.04) 100%);
+  border-bottom: 1px solid rgba(167,139,250,.15);
   display: flex; align-items: baseline; gap: 10px;
 }
 .persona-label { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--purple); font-weight: 700; }
 .persona-city  { font-size: 12px; color: var(--text2); }
-.persona-archetype { padding: 14px 18px 4px; font-size: 20px; font-weight: 700; color: #e6edf3; letter-spacing: -.3px; }
-.persona-body { padding: 0 18px 16px; display: flex; flex-direction: column; gap: 14px; }
+.persona-archetype { padding: 14px 18px 2px; font-size: 20px; font-weight: 700; color: #e6edf3; letter-spacing: -.3px; }
+.persona-summary {
+  padding: 6px 18px 14px;
+  font-size: 13px; color: var(--text); line-height: 1.7;
+  border-bottom: 1px solid var(--border2);
+}
+.persona-body { padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 16px; }
 .persona-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: .7px; color: var(--text2); font-weight: 700; margin-bottom: 8px; }
 
-/* Core promises */
-.persona-promises {
-  padding: 10px 18px 4px;
-  border-top: 1px solid rgba(167,139,250,.15);
-  display: flex; flex-direction: column; gap: 5px;
+/* Taste insights */
+.insights-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.insights-list li {
+  font-size: 12px; color: var(--text); padding-left: 16px;
+  position: relative; line-height: 1.6;
+  border-left: 2px solid rgba(167,139,250,.3);
+  padding: 4px 0 4px 12px;
 }
-.promise-item {
-  font-size: 12px; color: var(--purple); font-style: italic; line-height: 1.5;
-  padding-left: 12px; position: relative;
-}
-.promise-item::before { content: '"'; position: absolute; left: 0; color: var(--purple); font-style: normal; }
-
-/* Psychographic row */
-.persona-psych-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-@media (max-width: 680px) { .persona-psych-row { grid-template-columns: 1fr; } }
-.persona-psych-block {
-  background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: var(--r); padding: 10px 12px;
-}
-.persona-psych-block p { font-size: 12px; color: var(--text); line-height: 1.6; }
-
-/* Key interests */
-.interests-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
-@media (max-width: 680px) { .interests-list { grid-template-columns: 1fr; } }
-.interests-list li { font-size: 12px; color: var(--text); padding-left: 14px; position: relative; line-height: 1.5; }
-.interests-list li::before { content: "·"; position: absolute; left: 4px; color: var(--text2); }
 
 /* Day in the life */
 .persona-daylife {
@@ -292,17 +279,12 @@ input[type="text"] { width: 200px; }
   font-size: 12.5px; color: var(--text); font-style: italic; line-height: 1.75;
 }
 
-/* What they seek */
-.seek-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
-.seek-list li { font-size: 12px; color: var(--text); padding-left: 14px; position: relative; line-height: 1.5; }
-.seek-list li::before { content: "→"; position: absolute; left: 0; color: var(--blue); font-size: 10px; top: 2px; }
-
-/* Bottom two-col: creative direction + distinction */
+/* Bottom two-col: audience signals + distinction */
 .persona-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 680px) { .persona-bottom-row { grid-template-columns: 1fr; } }
-.cd-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
-.cd-list li { font-size: 12px; color: var(--text); padding-left: 14px; position: relative; line-height: 1.5; }
-.cd-list li::before { content: "→"; position: absolute; left: 0; color: var(--purple); font-size: 10px; top: 2px; }
+.signals-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.signals-list li { font-size: 12px; color: var(--text); padding-left: 14px; position: relative; line-height: 1.55; }
+.signals-list li::before { content: "→"; position: absolute; left: 0; color: var(--cyan); font-size: 10px; top: 2px; }
 .persona-distinction {
   padding: 10px 14px;
   background: rgba(251,191,36,.06); border-left: 2px solid var(--yellow);
@@ -669,7 +651,7 @@ function renderPersona(city, data) {
   // Header
   const hdr = document.createElement("div");
   hdr.className = "persona-hdr";
-  hdr.innerHTML = `<span class="persona-label">Persona</span><span class="persona-city">${esc(city)}</span>`;
+  hdr.innerHTML = `<span class="persona-label">Audience Profile</span><span class="persona-city">${esc(city)}</span>`;
   card.appendChild(hdr);
 
   // Archetype
@@ -678,61 +660,33 @@ function renderPersona(city, data) {
   arch.textContent = data.archetype;
   card.appendChild(arch);
 
-  // Core Promises
-  if ((data.core_promises || []).length) {
-    const promisesWrap = document.createElement("div");
-    promisesWrap.className = "persona-promises";
-    const promisesTitle = document.createElement("div");
-    promisesTitle.className = "persona-section-title";
-    promisesTitle.textContent = "Core Promises";
-    promisesWrap.appendChild(promisesTitle);
-    data.core_promises.forEach(p => {
-      const el = document.createElement("div");
-      el.className = "promise-item";
-      el.textContent = p;
-      promisesWrap.appendChild(el);
-    });
-    card.appendChild(promisesWrap);
+  // Summary
+  if (data.summary) {
+    const summary = document.createElement("div");
+    summary.className = "persona-summary";
+    summary.textContent = data.summary;
+    card.appendChild(summary);
   }
 
   const body = document.createElement("div");
   body.className = "persona-body";
 
-  // Psychographic breakdown row
-  if (data.psychographics || data.core_motivation || data.lifestyle_traits) {
-    const psychRow = document.createElement("div");
-    psychRow.className = "persona-psych-row";
-    const blocks = [
-      { title: "Psychographics", value: data.psychographics },
-      { title: "Core Motivation", value: data.core_motivation },
-      { title: "Lifestyle Traits", value: data.lifestyle_traits },
-    ];
-    blocks.forEach(({ title, value }) => {
-      if (!value) return;
-      const block = document.createElement("div");
-      block.className = "persona-psych-block";
-      block.innerHTML = `<div class="persona-section-title">${esc(title)}</div><p>${esc(value)}</p>`;
-      psychRow.appendChild(block);
-    });
-    body.appendChild(psychRow);
-  }
-
-  // Key Interests
-  if ((data.key_interests || []).length) {
-    const interestsWrap = document.createElement("div");
-    const interestsTitle = document.createElement("div");
-    interestsTitle.className = "persona-section-title";
-    interestsTitle.textContent = "Key Interests & Behaviors";
-    interestsWrap.appendChild(interestsTitle);
-    const interestsList = document.createElement("ul");
-    interestsList.className = "interests-list";
-    data.key_interests.forEach(item => {
+  // Taste Insights
+  if ((data.taste_insights || []).length) {
+    const insightsWrap = document.createElement("div");
+    const insightsTitle = document.createElement("div");
+    insightsTitle.className = "persona-section-title";
+    insightsTitle.textContent = "Taste Insights";
+    insightsWrap.appendChild(insightsTitle);
+    const insightsList = document.createElement("ul");
+    insightsList.className = "insights-list";
+    data.taste_insights.forEach(item => {
       const li = document.createElement("li");
       li.textContent = item;
-      interestsList.appendChild(li);
+      insightsList.appendChild(li);
     });
-    interestsWrap.appendChild(interestsList);
-    body.appendChild(interestsWrap);
+    insightsWrap.appendChild(insightsList);
+    body.appendChild(insightsWrap);
   }
 
   // Day In The Life
@@ -749,56 +703,41 @@ function renderPersona(city, data) {
     body.appendChild(dayWrap);
   }
 
-  // What They Seek
-  if ((data.what_they_seek || []).length) {
-    const seekWrap = document.createElement("div");
-    const seekTitle = document.createElement("div");
-    seekTitle.className = "persona-section-title";
-    seekTitle.textContent = `What They Seek in ${city}`;
-    seekWrap.appendChild(seekTitle);
-    const seekList = document.createElement("ul");
-    seekList.className = "seek-list";
-    data.what_they_seek.forEach(item => {
-      const li = document.createElement("li");
-      li.textContent = item;
-      seekList.appendChild(li);
-    });
-    seekWrap.appendChild(seekList);
-    body.appendChild(seekWrap);
-  }
-
-  // Bottom row: Creative Direction + City Distinction
+  // Bottom row: Audience Signals + City Distinction
   const bottomRow = document.createElement("div");
   bottomRow.className = "persona-bottom-row";
 
-  const cdWrap = document.createElement("div");
-  const cdTitle = document.createElement("div");
-  cdTitle.className = "persona-section-title";
-  cdTitle.textContent = "Creative Direction";
-  cdWrap.appendChild(cdTitle);
-  const cdList = document.createElement("ul");
-  cdList.className = "cd-list";
-  (data.creative_direction || []).forEach(cd => {
-    const li = document.createElement("li");
-    li.textContent = cd;
-    cdList.appendChild(li);
-  });
-  cdWrap.appendChild(cdList);
+  if ((data.audience_signals || []).length) {
+    const sigWrap = document.createElement("div");
+    const sigTitle = document.createElement("div");
+    sigTitle.className = "persona-section-title";
+    sigTitle.textContent = "Audience Signals";
+    sigWrap.appendChild(sigTitle);
+    const sigList = document.createElement("ul");
+    sigList.className = "signals-list";
+    data.audience_signals.forEach(s => {
+      const li = document.createElement("li");
+      li.textContent = s;
+      sigList.appendChild(li);
+    });
+    sigWrap.appendChild(sigList);
+    bottomRow.appendChild(sigWrap);
+  }
 
-  const distWrap = document.createElement("div");
-  const distTitle = document.createElement("div");
-  distTitle.className = "persona-section-title";
-  distTitle.textContent = `What makes ${city} distinct`;
-  distWrap.appendChild(distTitle);
-  const dist = document.createElement("div");
-  dist.className = "persona-distinction";
-  dist.textContent = data.city_distinction;
-  distWrap.appendChild(dist);
+  if (data.city_distinction) {
+    const distWrap = document.createElement("div");
+    const distTitle = document.createElement("div");
+    distTitle.className = "persona-section-title";
+    distTitle.textContent = `${city} vs. Other Markets`;
+    distWrap.appendChild(distTitle);
+    const dist = document.createElement("div");
+    dist.className = "persona-distinction";
+    dist.textContent = data.city_distinction;
+    distWrap.appendChild(dist);
+    bottomRow.appendChild(distWrap);
+  }
 
-  bottomRow.appendChild(cdWrap);
-  bottomRow.appendChild(distWrap);
   body.appendChild(bottomRow);
-
   card.appendChild(body);
   grid.appendChild(card);
 }
@@ -973,14 +912,10 @@ async function startRun() {
     renderPersona(d.city, d);
     _report.personas[d.city] = {
       archetype: d.archetype,
-      core_promises: d.core_promises,
-      psychographics: d.psychographics,
-      core_motivation: d.core_motivation,
-      lifestyle_traits: d.lifestyle_traits,
-      key_interests: d.key_interests,
-      what_they_seek: d.what_they_seek,
+      summary: d.summary,
+      taste_insights: d.taste_insights,
       day_in_the_life: d.day_in_the_life,
-      creative_direction: d.creative_direction,
+      audience_signals: d.audience_signals,
       city_distinction: d.city_distinction,
     };
     setPill("claude", "done", "Personas ready");
@@ -1109,25 +1044,15 @@ function buildPDFHtml() {
     // Persona section
     const personaHtml = Object.keys(persona).length ? `
       <div class="city-persona-section">
-        <div class="city-persona-eyebrow">PERSONA PROFILE · ${pesc(city.toUpperCase())}</div>
+        <div class="city-persona-eyebrow">AUDIENCE PROFILE · ${pesc(city.toUpperCase())}</div>
         <div class="city-archetype">${pesc(persona.archetype || "")}</div>
+        ${persona.summary ? `<p class="city-narrative">${pesc(persona.summary)}</p>` : ""}
 
-        ${(persona.core_promises || []).length ? `
-        <div class="pdf-promises">
-          ${persona.core_promises.map(p => `<div class="pdf-promise-item">"${pesc(p)}"</div>`).join("")}
-        </div>` : ""}
-
-        <div class="pdf-psych-row">
-          ${persona.psychographics ? `<div class="pdf-psych-block"><div class="section-eyebrow">PSYCHOGRAPHICS</div><p>${pesc(persona.psychographics)}</p></div>` : ""}
-          ${persona.core_motivation ? `<div class="pdf-psych-block"><div class="section-eyebrow">CORE MOTIVATION</div><p>${pesc(persona.core_motivation)}</p></div>` : ""}
-          ${persona.lifestyle_traits ? `<div class="pdf-psych-block"><div class="section-eyebrow">LIFESTYLE TRAITS</div><p>${pesc(persona.lifestyle_traits)}</p></div>` : ""}
-        </div>
-
-        ${(persona.key_interests || []).length ? `
-        <div class="pdf-interests-block">
-          <div class="section-eyebrow">KEY INTERESTS &amp; BEHAVIORS</div>
-          <ul class="pdf-interests-list">
-            ${persona.key_interests.map(i => `<li>${pesc(i)}</li>`).join("")}
+        ${(persona.taste_insights || []).length ? `
+        <div class="pdf-insights-block">
+          <div class="section-eyebrow">TASTE INSIGHTS</div>
+          <ul class="pdf-insights-list">
+            ${persona.taste_insights.map(i => `<li>${pesc(i)}</li>`).join("")}
           </ul>
         </div>` : ""}
 
@@ -1137,22 +1062,14 @@ function buildPDFHtml() {
           <p class="pdf-daylife-text">${pesc(persona.day_in_the_life)}</p>
         </div>` : ""}
 
-        ${(persona.what_they_seek || []).length ? `
-        <div class="pdf-seek-block">
-          <div class="section-eyebrow">WHAT THEY SEEK IN ${pesc(city.toUpperCase())}</div>
-          <ul class="pdf-seek-list">
-            ${persona.what_they_seek.map(s => `<li>${pesc(s)}</li>`).join("")}
-          </ul>
-        </div>` : ""}
-
         <div class="city-persona-grid">
           <div class="city-cd">
-            <div class="section-eyebrow">CREATIVE DIRECTION</div>
+            <div class="section-eyebrow">AUDIENCE SIGNALS</div>
             <ul class="cd-pdf-list">
-              ${(persona.creative_direction || []).map(cd => {
-                const colonIdx = cd.indexOf(":");
-                const label = colonIdx > -1 ? cd.substring(0, colonIdx) : "";
-                const body  = colonIdx > -1 ? cd.substring(colonIdx + 1).trim() : cd;
+              ${(persona.audience_signals || []).map(s => {
+                const colonIdx = s.indexOf(":");
+                const label = colonIdx > -1 ? s.substring(0, colonIdx) : "";
+                const body  = colonIdx > -1 ? s.substring(colonIdx + 1).trim() : s;
                 return `<li><strong>${pesc(label)}${label ? ":" : ""}</strong> ${pesc(body)}</li>`;
               }).join("")}
             </ul>
@@ -1162,7 +1079,7 @@ function buildPDFHtml() {
             <blockquote class="distinction-quote">${pesc(persona.city_distinction || "")}</blockquote>
           </div>
         </div>
-      </div>` : `<div class="city-persona-section" style="color:#666;font-style:italic">Persona profile not available for ${pesc(city)}.</div>`;
+      </div>` : `<div class="city-persona-section" style="color:#666;font-style:italic">Audience profile not available for ${pesc(city)}.</div>`;
 
     // Taste intelligence section
     const domainCards = r.domains.map(dom => {
@@ -1502,55 +1419,17 @@ function buildPDFHtml() {
     margin-bottom: 12px;
     line-height: 1.15;
   }
-  /* Core Promises */
-  .pdf-promises {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 16px;
-  }
-  .pdf-promise-item {
-    font-size: 8pt;
-    color: #5B21B6;
-    font-style: italic;
-    background: #F5F3FF;
+  /* Taste Insights */
+  .pdf-insights-block { margin-bottom: 16px; }
+  .pdf-insights-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .pdf-insights-list li {
+    font-size: 8.5pt; color: var(--text);
+    padding: 5px 10px 5px 12px; line-height: 1.6;
     border-left: 2px solid #7C3AED;
-    padding: 5px 10px;
-    border-radius: 0 4px 4px 0;
-    line-height: 1.5;
-    flex: 1 1 40%;
-  }
-  /* Psychographic row */
-  .pdf-psych-row {
-    display: flex; gap: 12px;
-    margin-bottom: 14px;
-  }
-  .pdf-psych-block {
-    flex: 1;
-    background: #F9FAFB;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 10px;
-  }
-  .pdf-psych-block p {
-    font-size: 8pt;
-    color: var(--text);
-    line-height: 1.6;
-    margin: 0;
-  }
-  /* Key Interests */
-  .pdf-interests-block { margin-bottom: 14px; }
-  .pdf-interests-list {
-    list-style: none; padding: 0;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 3px 20px;
-  }
-  .pdf-interests-list li {
-    font-size: 8pt; color: var(--text);
-    padding: 2px 0 2px 12px; position: relative; line-height: 1.5;
-  }
-  .pdf-interests-list li::before {
-    content: "·"; position: absolute; left: 2px; color: #999;
+    background: #FAFAFA;
   }
   /* Day in the life */
-  .pdf-daylife-block { margin-bottom: 14px; }
+  .pdf-daylife-block { margin-bottom: 16px; }
   .pdf-daylife-text {
     font-size: 9pt; color: var(--text); font-style: italic;
     line-height: 1.8; margin: 0;
@@ -1558,17 +1437,6 @@ function buildPDFHtml() {
     background: #EFF6FF;
     border-left: 3px solid #3B82F6;
     border-radius: 0 4px 4px 0;
-  }
-  /* What they seek */
-  .pdf-seek-block { margin-bottom: 16px; }
-  .pdf-seek-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 20px; }
-  .pdf-seek-list li {
-    font-size: 8pt; color: var(--text);
-    padding: 3px 0 3px 14px; position: relative; line-height: 1.5;
-    border-bottom: 1px solid var(--border);
-  }
-  .pdf-seek-list li::before {
-    content: "→"; position: absolute; left: 0; color: #3B82F6; font-size: 7pt; top: 4px;
   }
   .city-persona-grid {
     overflow: hidden;
