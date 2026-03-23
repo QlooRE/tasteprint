@@ -254,10 +254,52 @@ input[type="text"] { width: 200px; }
 .persona-label { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--purple); font-weight: 700; }
 .persona-city  { font-size: 12px; color: var(--text2); }
 .persona-archetype { padding: 14px 18px 4px; font-size: 20px; font-weight: 700; color: #e6edf3; letter-spacing: -.3px; }
-.persona-narrative { padding: 5px 18px 14px; font-size: 13px; color: var(--text); line-height: 1.7; }
-.persona-body { padding: 0 18px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 680px) { .persona-body { grid-template-columns: 1fr; } }
+.persona-body { padding: 0 18px 16px; display: flex; flex-direction: column; gap: 14px; }
 .persona-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: .7px; color: var(--text2); font-weight: 700; margin-bottom: 8px; }
+
+/* Core promises */
+.persona-promises {
+  padding: 10px 18px 4px;
+  border-top: 1px solid rgba(167,139,250,.15);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.promise-item {
+  font-size: 12px; color: var(--purple); font-style: italic; line-height: 1.5;
+  padding-left: 12px; position: relative;
+}
+.promise-item::before { content: '"'; position: absolute; left: 0; color: var(--purple); font-style: normal; }
+
+/* Psychographic row */
+.persona-psych-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+@media (max-width: 680px) { .persona-psych-row { grid-template-columns: 1fr; } }
+.persona-psych-block {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 10px 12px;
+}
+.persona-psych-block p { font-size: 12px; color: var(--text); line-height: 1.6; }
+
+/* Key interests */
+.interests-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+@media (max-width: 680px) { .interests-list { grid-template-columns: 1fr; } }
+.interests-list li { font-size: 12px; color: var(--text); padding-left: 14px; position: relative; line-height: 1.5; }
+.interests-list li::before { content: "·"; position: absolute; left: 4px; color: var(--text2); }
+
+/* Day in the life */
+.persona-daylife {
+  padding: 12px 14px;
+  background: rgba(88,166,255,.05); border-left: 2px solid var(--blue);
+  border-radius: 0 var(--r) var(--r) 0;
+  font-size: 12.5px; color: var(--text); font-style: italic; line-height: 1.75;
+}
+
+/* What they seek */
+.seek-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.seek-list li { font-size: 12px; color: var(--text); padding-left: 14px; position: relative; line-height: 1.5; }
+.seek-list li::before { content: "→"; position: absolute; left: 0; color: var(--blue); font-size: 10px; top: 2px; }
+
+/* Bottom two-col: creative direction + distinction */
+.persona-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 680px) { .persona-bottom-row { grid-template-columns: 1fr; } }
 .cd-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .cd-list li { font-size: 12px; color: var(--text); padding-left: 14px; position: relative; line-height: 1.5; }
 .cd-list li::before { content: "→"; position: absolute; left: 0; color: var(--purple); font-size: 10px; top: 2px; }
@@ -267,8 +309,8 @@ input[type="text"] { width: 200px; }
   border-radius: 0 var(--r) var(--r) 0;
   font-size: 12px; color: var(--text); font-style: italic; line-height: 1.6;
 }
-.personas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 16px; }
-@media (max-width: 560px) { .personas-grid { grid-template-columns: 1fr; } }
+.personas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 20px; }
+@media (max-width: 600px) { .personas-grid { grid-template-columns: 1fr; } }
 
 /* ── Compare ── */
 .compare-grid { display: flex; flex-direction: column; gap: 20px; }
@@ -624,23 +666,110 @@ function renderPersona(city, data) {
   const card = document.createElement("div");
   card.className = "persona-card";
 
+  // Header
   const hdr = document.createElement("div");
   hdr.className = "persona-hdr";
   hdr.innerHTML = `<span class="persona-label">Persona</span><span class="persona-city">${esc(city)}</span>`;
   card.appendChild(hdr);
 
+  // Archetype
   const arch = document.createElement("div");
   arch.className = "persona-archetype";
-  arch.textContent = `"${data.archetype}"`;
+  arch.textContent = data.archetype;
   card.appendChild(arch);
 
-  const narr = document.createElement("div");
-  narr.className = "persona-narrative";
-  narr.textContent = data.narrative;
-  card.appendChild(narr);
+  // Core Promises
+  if ((data.core_promises || []).length) {
+    const promisesWrap = document.createElement("div");
+    promisesWrap.className = "persona-promises";
+    const promisesTitle = document.createElement("div");
+    promisesTitle.className = "persona-section-title";
+    promisesTitle.textContent = "Core Promises";
+    promisesWrap.appendChild(promisesTitle);
+    data.core_promises.forEach(p => {
+      const el = document.createElement("div");
+      el.className = "promise-item";
+      el.textContent = p;
+      promisesWrap.appendChild(el);
+    });
+    card.appendChild(promisesWrap);
+  }
 
   const body = document.createElement("div");
   body.className = "persona-body";
+
+  // Psychographic breakdown row
+  if (data.psychographics || data.core_motivation || data.lifestyle_traits) {
+    const psychRow = document.createElement("div");
+    psychRow.className = "persona-psych-row";
+    const blocks = [
+      { title: "Psychographics", value: data.psychographics },
+      { title: "Core Motivation", value: data.core_motivation },
+      { title: "Lifestyle Traits", value: data.lifestyle_traits },
+    ];
+    blocks.forEach(({ title, value }) => {
+      if (!value) return;
+      const block = document.createElement("div");
+      block.className = "persona-psych-block";
+      block.innerHTML = `<div class="persona-section-title">${esc(title)}</div><p>${esc(value)}</p>`;
+      psychRow.appendChild(block);
+    });
+    body.appendChild(psychRow);
+  }
+
+  // Key Interests
+  if ((data.key_interests || []).length) {
+    const interestsWrap = document.createElement("div");
+    const interestsTitle = document.createElement("div");
+    interestsTitle.className = "persona-section-title";
+    interestsTitle.textContent = "Key Interests & Behaviors";
+    interestsWrap.appendChild(interestsTitle);
+    const interestsList = document.createElement("ul");
+    interestsList.className = "interests-list";
+    data.key_interests.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      interestsList.appendChild(li);
+    });
+    interestsWrap.appendChild(interestsList);
+    body.appendChild(interestsWrap);
+  }
+
+  // Day In The Life
+  if (data.day_in_the_life) {
+    const dayWrap = document.createElement("div");
+    const dayTitle = document.createElement("div");
+    dayTitle.className = "persona-section-title";
+    dayTitle.textContent = "A Day In The Life";
+    dayWrap.appendChild(dayTitle);
+    const dayText = document.createElement("div");
+    dayText.className = "persona-daylife";
+    dayText.textContent = data.day_in_the_life;
+    dayWrap.appendChild(dayText);
+    body.appendChild(dayWrap);
+  }
+
+  // What They Seek
+  if ((data.what_they_seek || []).length) {
+    const seekWrap = document.createElement("div");
+    const seekTitle = document.createElement("div");
+    seekTitle.className = "persona-section-title";
+    seekTitle.textContent = `What They Seek in ${city}`;
+    seekWrap.appendChild(seekTitle);
+    const seekList = document.createElement("ul");
+    seekList.className = "seek-list";
+    data.what_they_seek.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      seekList.appendChild(li);
+    });
+    seekWrap.appendChild(seekList);
+    body.appendChild(seekWrap);
+  }
+
+  // Bottom row: Creative Direction + City Distinction
+  const bottomRow = document.createElement("div");
+  bottomRow.className = "persona-bottom-row";
 
   const cdWrap = document.createElement("div");
   const cdTitle = document.createElement("div");
@@ -666,8 +795,10 @@ function renderPersona(city, data) {
   dist.textContent = data.city_distinction;
   distWrap.appendChild(dist);
 
-  body.appendChild(cdWrap);
-  body.appendChild(distWrap);
+  bottomRow.appendChild(cdWrap);
+  bottomRow.appendChild(distWrap);
+  body.appendChild(bottomRow);
+
   card.appendChild(body);
   grid.appendChild(card);
 }
@@ -841,8 +972,16 @@ async function startRun() {
     const d = JSON.parse(e.data);
     renderPersona(d.city, d);
     _report.personas[d.city] = {
-      archetype: d.archetype, narrative: d.narrative,
-      creative_direction: d.creative_direction, city_distinction: d.city_distinction,
+      archetype: d.archetype,
+      core_promises: d.core_promises,
+      psychographics: d.psychographics,
+      core_motivation: d.core_motivation,
+      lifestyle_traits: d.lifestyle_traits,
+      key_interests: d.key_interests,
+      what_they_seek: d.what_they_seek,
+      day_in_the_life: d.day_in_the_life,
+      creative_direction: d.creative_direction,
+      city_distinction: d.city_distinction,
     };
     setPill("claude", "done", "Personas ready");
   });
@@ -971,8 +1110,40 @@ function buildPDFHtml() {
     const personaHtml = Object.keys(persona).length ? `
       <div class="city-persona-section">
         <div class="city-persona-eyebrow">PERSONA PROFILE · ${pesc(city.toUpperCase())}</div>
-        <div class="city-archetype">"${pesc(persona.archetype || "")}"</div>
-        <p class="city-narrative">${pesc(persona.narrative || "")}</p>
+        <div class="city-archetype">${pesc(persona.archetype || "")}</div>
+
+        ${(persona.core_promises || []).length ? `
+        <div class="pdf-promises">
+          ${persona.core_promises.map(p => `<div class="pdf-promise-item">"${pesc(p)}"</div>`).join("")}
+        </div>` : ""}
+
+        <div class="pdf-psych-row">
+          ${persona.psychographics ? `<div class="pdf-psych-block"><div class="section-eyebrow">PSYCHOGRAPHICS</div><p>${pesc(persona.psychographics)}</p></div>` : ""}
+          ${persona.core_motivation ? `<div class="pdf-psych-block"><div class="section-eyebrow">CORE MOTIVATION</div><p>${pesc(persona.core_motivation)}</p></div>` : ""}
+          ${persona.lifestyle_traits ? `<div class="pdf-psych-block"><div class="section-eyebrow">LIFESTYLE TRAITS</div><p>${pesc(persona.lifestyle_traits)}</p></div>` : ""}
+        </div>
+
+        ${(persona.key_interests || []).length ? `
+        <div class="pdf-interests-block">
+          <div class="section-eyebrow">KEY INTERESTS &amp; BEHAVIORS</div>
+          <ul class="pdf-interests-list">
+            ${persona.key_interests.map(i => `<li>${pesc(i)}</li>`).join("")}
+          </ul>
+        </div>` : ""}
+
+        ${persona.day_in_the_life ? `
+        <div class="pdf-daylife-block">
+          <div class="section-eyebrow">A DAY IN THE LIFE</div>
+          <p class="pdf-daylife-text">${pesc(persona.day_in_the_life)}</p>
+        </div>` : ""}
+
+        ${(persona.what_they_seek || []).length ? `
+        <div class="pdf-seek-block">
+          <div class="section-eyebrow">WHAT THEY SEEK IN ${pesc(city.toUpperCase())}</div>
+          <ul class="pdf-seek-list">
+            ${persona.what_they_seek.map(s => `<li>${pesc(s)}</li>`).join("")}
+          </ul>
+        </div>` : ""}
 
         <div class="city-persona-grid">
           <div class="city-cd">
@@ -1314,8 +1485,6 @@ function buildPDFHtml() {
     padding: 22px 0.55in 18px;
     border-bottom: 1px solid var(--border);
     background: #fff;
-    break-inside: avoid;
-    page-break-inside: avoid;
   }
   .city-persona-eyebrow {
     font-size: 7pt;
@@ -1326,19 +1495,80 @@ function buildPDFHtml() {
     margin-bottom: 10px;
   }
   .city-archetype {
-    font-size: 20pt;
+    font-size: 22pt;
     font-weight: 800;
     color: var(--navy);
     letter-spacing: -0.5px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     line-height: 1.15;
   }
-  .city-narrative {
-    font-size: 9.5pt;
-    color: var(--text);
-    line-height: 1.75;
+  /* Core Promises */
+  .pdf-promises {
+    display: flex; flex-wrap: wrap; gap: 6px;
     margin-bottom: 16px;
-    max-width: 6.8in;
+  }
+  .pdf-promise-item {
+    font-size: 8pt;
+    color: #5B21B6;
+    font-style: italic;
+    background: #F5F3FF;
+    border-left: 2px solid #7C3AED;
+    padding: 5px 10px;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.5;
+    flex: 1 1 40%;
+  }
+  /* Psychographic row */
+  .pdf-psych-row {
+    display: flex; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .pdf-psych-block {
+    flex: 1;
+    background: #F9FAFB;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+  .pdf-psych-block p {
+    font-size: 8pt;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0;
+  }
+  /* Key Interests */
+  .pdf-interests-block { margin-bottom: 14px; }
+  .pdf-interests-list {
+    list-style: none; padding: 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3px 20px;
+  }
+  .pdf-interests-list li {
+    font-size: 8pt; color: var(--text);
+    padding: 2px 0 2px 12px; position: relative; line-height: 1.5;
+  }
+  .pdf-interests-list li::before {
+    content: "·"; position: absolute; left: 2px; color: #999;
+  }
+  /* Day in the life */
+  .pdf-daylife-block { margin-bottom: 14px; }
+  .pdf-daylife-text {
+    font-size: 9pt; color: var(--text); font-style: italic;
+    line-height: 1.8; margin: 0;
+    padding: 10px 14px;
+    background: #EFF6FF;
+    border-left: 3px solid #3B82F6;
+    border-radius: 0 4px 4px 0;
+  }
+  /* What they seek */
+  .pdf-seek-block { margin-bottom: 16px; }
+  .pdf-seek-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 20px; }
+  .pdf-seek-list li {
+    font-size: 8pt; color: var(--text);
+    padding: 3px 0 3px 14px; position: relative; line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+  }
+  .pdf-seek-list li::before {
+    content: "→"; position: absolute; left: 0; color: #3B82F6; font-size: 7pt; top: 4px;
   }
   .city-persona-grid {
     overflow: hidden;

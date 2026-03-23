@@ -58,7 +58,7 @@ def generate_personas(
     age: str,
     gender: str,
     cities_data: dict,   # {city: {domain_label: [{"name": str, "tags": list[str]}]}}
-) -> dict:               # {city: {archetype, narrative, creative_direction, city_distinction}}
+) -> dict:
     """Call Claude to write persona profiles for every city in cities_data."""
 
     age_str    = _age_label(age)
@@ -93,29 +93,64 @@ have affinity for **{seed_name}** gravitate toward across {n_cities} {"city" if 
 Taste data — top affinity results by city and category:
 {data_summary}
 
-Write a persona profile for each city. Each profile must include:
+Write a rich, consulting-grade persona profile for each city. Each profile must include:
 
-- **archetype**: A vivid 3–5 word name capturing who this person is \
+- **archetype**: A vivid 3–5 word name with "The" prefix capturing who this person is \
 (e.g. "The West Loop Tastemaker", "The Sunday Brunch Optimizer"). \
 Make it feel earned by the data, not generic.
 
-- **narrative**: 2–3 punchy sentences describing who this person IS — \
-their self-image, values, lifestyle — inferred from the taste signals. \
-Be specific and cultural, not demographic. No "they are 30–34 year olds who…" framing.
+- **core_promises**: Array of exactly 5 short, punchy, quotable lines written in the \
+second person ("you") or as brand promises — capturing the emotional pull of this \
+lifestyle for this audience. Each line should be poetic, specific, and 8–15 words. \
+(e.g. "Your slip is your social circle, dock life meets design.", \
+"Luxury without pretension, adventure without effort.")
 
-- **creative_direction**: Array of exactly 4 actionable cues for a creative team:
-  tone of voice, visual/aesthetic language, cultural touchpoints to reference, \
-  and one "avoid" (what would ring false for this persona).
+- **psychographics**: 1–2 sentences describing this person's mindset, values, and \
+social identity — what they believe about themselves and how they move through the world. \
+Be specific and cultural, not demographic.
 
-- **city_distinction**: One sharp sentence on what makes this city's persona \
-meaningfully different from the others. If there's only one city, describe \
+- **core_motivation**: One sharp sentence capturing the single deepest driver for this \
+persona — what they are ultimately seeking. \
+(e.g. "Belonging to a community that's elevated, social, and convenient.")
+
+- **lifestyle_traits**: A comma-separated string of 6–8 vivid descriptors capturing \
+how this person lives day-to-day. \
+(e.g. "Design-conscious, fitness-minded, experience-driven, socially curated, sustainability-oriented")
+
+- **key_interests**: Array of 7–9 specific behaviors and interests inferred directly \
+from the taste data — concrete activities, media, brands, and habits. \
+(e.g. "Weekend farmers markets and boutique fitness", "Craft cocktail culture and local dining")
+
+- **what_they_seek**: Array of 5–6 bullet points on what specifically attracts and \
+retains this persona in this city — what experiences, amenities, or qualities of place \
+resonate most with them here. Ground these in the actual taste signals.
+
+- **day_in_the_life**: An immersive 4–6 sentence narrative written entirely in second \
+person ("you") — specific to this city, drawing on the actual taste data entities. \
+Paint a vivid sensory scene of a day in this person's life here. \
+End with a line that captures emotional resonance, not just activity. \
+(Model: "Morning coffee on the deck as the marina hums awake. A casual chat with \
+neighbors before setting out... Here, you're not just near the lake — you belong to it.")
+
+- **creative_direction**: Array of exactly 4 actionable cues for a creative team: \
+tone of voice, visual/aesthetic language, cultural touchpoints to reference, \
+and one "avoid" (what would ring false for this persona).
+
+- **city_distinction**: One sharp sentence on what makes this city's version of this \
+persona meaningfully different from the others. If there's only one city, describe \
 what makes this persona culturally specific to that market.
 
 Return ONLY valid JSON — no markdown fences, no commentary — in this exact shape:
 {{
   "CityName": {{
     "archetype": "...",
-    "narrative": "...",
+    "core_promises": ["...", "...", "...", "...", "..."],
+    "psychographics": "...",
+    "core_motivation": "...",
+    "lifestyle_traits": "...",
+    "key_interests": ["...", "...", "...", "...", "...", "...", "..."],
+    "what_they_seek": ["...", "...", "...", "...", "..."],
+    "day_in_the_life": "...",
     "creative_direction": ["...", "...", "...", "..."],
     "city_distinction": "..."
   }}
@@ -124,7 +159,7 @@ Return ONLY valid JSON — no markdown fences, no commentary — in this exact s
     client = _get_client()
     msg = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=2500,
+        max_tokens=5000,
         messages=[{"role": "user", "content": prompt}],
     )
 
